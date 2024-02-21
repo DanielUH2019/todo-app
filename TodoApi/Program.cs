@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
 using TodoApi.Services;
+using TodoApi.Models;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Create the service EDM model.
 var modelBuilder = new ODataConventionModelBuilder();
-modelBuilder.EntitySet<Task>("Tasks");
-var edmModel = modelBuilder.GetEdmModel();
+modelBuilder.EntitySet<TaskModel>("Tasks");
 
 // Register OData service.
 builder.Services.AddControllers().AddOData(
@@ -26,14 +27,25 @@ builder.Services.AddControllers().AddOData(
         model: modelBuilder.GetEdmModel()));
 
 
+// builder.Services.AddDbContext<TaskDbContext>(options =>
+//     options.UseInMemoryDatabase("TaskDb"));
+
+// var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = "Server=localhost; User ID=root; Password=Leinad123; Database=blog";
 builder.Services.AddDbContext<TaskDbContext>(options =>
-    options.UseInMemoryDatabase("TaskDb"));
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                .LogTo(Console.WriteLine, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+                .EnableDetailedErrors());
 
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddControllers();
+// builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+});
 
 builder.Services.AddMvcCore(options =>
 {
@@ -60,14 +72,11 @@ builder.Services.AddMvcCore(options =>
 
 });
 
-var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+var app = builder.Build();
+app.UseSwagger();
+app.UseSwaggerUI();
+
 
 app.UseHttpsRedirection();
 
