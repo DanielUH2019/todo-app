@@ -9,5 +9,5 @@ public class TaskDbContext : DbContext
     {
     }
 
-    public DbSet<Task> Tasks { get; set; }
+    public DbSet<TaskModel> Tasks { get; set; }
 }
