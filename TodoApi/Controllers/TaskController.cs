@@ -6,6 +6,7 @@ namespace TodoApi.Controllers
     using Microsoft.AspNetCore.OData.Deltas;
     using Microsoft.AspNetCore.OData.Routing.Controllers;
     using TodoApi.Services;
+    using Microsoft.AspNetCore.OData.Query;
 
     public class TaskController : ODataController
     {
@@ -16,6 +17,8 @@ namespace TodoApi.Controllers
             _service = service;
         }
 
+        [EnableQuery(PageSize = 10, AllowedFunctions = AllowedFunctions.AllFunctions &
+            ~AllowedFunctions.All & ~AllowedFunctions.Any, AllowedOrderByProperties = "Id,CreationTime")]
         public ActionResult<IQueryable<TaskModel>> Get()
         {
             return Ok(_service.GetTasks());
