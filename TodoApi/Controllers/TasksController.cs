@@ -8,14 +8,15 @@ namespace TodoApi.Controllers
     using TodoApi.Services;
     using Microsoft.AspNetCore.OData.Query;
 
-    public class TaskController : ODataController
+    public class TasksController : ODataController
     {
         private readonly ITaskService _service;
 
-        public TaskController(ITaskService service)
+        public TasksController(ITaskService service)
         {
             _service = service;
         }
+
 
         [EnableQuery(PageSize = 10, AllowedFunctions = AllowedFunctions.AllFunctions &
             ~AllowedFunctions.All & ~AllowedFunctions.Any, AllowedOrderByProperties = "Id,CreationTime")]
