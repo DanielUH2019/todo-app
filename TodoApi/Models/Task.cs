@@ -1,7 +1,7 @@
 namespace TodoApi.Models;
 using Microsoft.OData.Edm;
 
-public class Task
+public class TaskModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

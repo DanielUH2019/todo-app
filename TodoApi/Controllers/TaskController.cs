@@ -1,90 +1,79 @@
 namespace TodoApi.Controllers
 {
     using System.Linq;
-    using TodoApi.Data;
     using TodoApi.Models;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.OData.Deltas;
     using Microsoft.AspNetCore.OData.Routing.Controllers;
+    using TodoApi.Services;
 
     public class TaskController : ODataController
     {
-        private readonly TaskDbContext db;
+        private readonly ITaskService _service;
 
-        public TaskController(TaskDbContext db)
+        public TaskController(ITaskService service)
         {
-            this.db = db;
+            _service = service;
         }
 
-        public ActionResult<IQueryable<Task>> Get()
+        public ActionResult<IQueryable<TaskModel>> Get()
         {
-            return Ok(db.Tasks);
+            return Ok(_service.GetTasks());
         }
 
-        public ActionResult<Task> Get([FromRoute] int key)
+        public async Task<ActionResult<TaskModel>> Get([FromRoute] int key)
         {
-            var customer = db.Tasks.SingleOrDefault(d => d.Id == key);
+            var task = await _service.GetTaskByIdAsync(key);
 
-            if (customer == null)
+            if (task is null)
             {
                 return NotFound();
             }
 
-            return Ok(customer);
+            return Ok(task);
         }
 
-        public ActionResult Post([FromBody] Task customer)
+        public async Task<ActionResult> Post([FromBody] TaskModel task)
         {
-            db.Tasks.Add(customer);
+            await _service.AddTaskAsync(task);
 
-            return Created(customer);
+            return Created(task);
         }
 
-        public ActionResult Put([FromRoute] int key, [FromBody] Task updatedTask)
+        public async Task<ActionResult> Put([FromRoute] int key, [FromBody] TaskModel updatedTask)
         {
-            var task = db.Tasks.SingleOrDefault(d => d.Id == key);
+            var task = await _service.UpdateTaskAsync(key, updatedTask);
 
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }
-
-            task.Name = updatedTask.Name;
-            task.IsComplete = updatedTask.IsComplete;
-
-            db.SaveChanges();
 
             return Updated(task);
         }
 
-        public ActionResult Patch([FromRoute] int key, [FromBody] Delta<Task> delta)
+        public async Task<ActionResult> Patch([FromRoute] int key, [FromBody] Delta<TaskModel> delta)
         {
-            var task = db.Tasks.SingleOrDefault(d => d.Id == key);
+            var task = await _service.PatchTaskAsync(key, delta);
 
-            if (task == null)
+            if (task is null)
             {
                 return NotFound();
             }
 
-            delta.Patch(task);
-
-            db.SaveChanges();
-
             return Updated(task);
         }
 
-        public ActionResult Delete([FromRoute] int key)
+        public async Task<ActionResult> Delete([FromRoute] int key)
         {
-            var customer = db.Tasks.SingleOrDefault(d => d.Id == key);
+            var task = await _service.DeleteTaskAsync(key);
 
-            if (customer != null)
+            if (task is null)
             {
-                db.Tasks.Remove(customer);
+                return NotFound();
             }
 
-            db.SaveChanges();
-
-            return NoContent();
+            return Ok("Task deleted successfully.");
         }
     }
 }
