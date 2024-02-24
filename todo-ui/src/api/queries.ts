@@ -11,7 +11,7 @@ import {
   taskModelList,
   TaskModel,
   TaskModelList,
-} from "../models/task";
+} from "../models/task.d";
 
 export const fetchTodosWithQuery = async (query: any): Promise<TaskModelList> => {
   const queryString = buildQuery(query);

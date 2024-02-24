@@ -9,7 +9,7 @@ import axios, {
 import {
   taskModel,
   TaskModel,
-} from "../models/task";
+} from "../models/task.d";
 
 export const createTodo = async (task: TaskModel): Promise<TaskModel> => {
   try {
@@ -22,9 +22,9 @@ export const createTodo = async (task: TaskModel): Promise<TaskModel> => {
   }
 };
 
-export const updateTodo = async (id: number, task: TaskModel): Promise<TaskModel> => {
+export const updateTodo = async (task: TaskModel): Promise<TaskModel> => {
   try {
-    const response = await axios.put(`/odata/Todos(${id})`, task);
+    const response = await axios.put(`/odata/Todos(${task.id})`, task);
     const parsedData = taskModel.parse(response.data);
     return parsedData;
   } catch (error) {
