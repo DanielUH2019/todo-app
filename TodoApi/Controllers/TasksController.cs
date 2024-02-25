@@ -19,7 +19,7 @@ namespace TodoApi.Controllers
 
 
         [EnableQuery(PageSize = 10, AllowedFunctions = AllowedFunctions.AllFunctions &
-            ~AllowedFunctions.All & ~AllowedFunctions.Any, AllowedOrderByProperties = "Id,CreationTime")]
+            ~AllowedFunctions.All & ~AllowedFunctions.Any, AllowedOrderByProperties = "Id,CreationTime,IsComplete,CompletedAt,Name")]
         public ActionResult<IQueryable<TaskModel>> Get()
         {
             return Ok(_service.GetTasks());
@@ -46,6 +46,7 @@ namespace TodoApi.Controllers
 
         public async Task<ActionResult> Put([FromRoute] int key, [FromBody] TaskModel updatedTask)
         {
+            
             var task = await _service.UpdateTaskAsync(key, updatedTask);
 
             if (task is null)

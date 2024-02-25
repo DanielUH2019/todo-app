@@ -22,7 +22,7 @@ modelBuilder.EntitySet<TaskModel>("Tasks");
 
 // Register OData service.
 builder.Services.AddControllers().AddOData(
-    options => options.EnableQueryFeatures(null).AddRouteComponents(
+    options => options.Select().Filter().OrderBy().Expand().Count().AddRouteComponents(
         routePrefix: "odata",
         model: modelBuilder.GetEdmModel()));
 
