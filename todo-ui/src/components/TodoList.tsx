@@ -21,7 +21,7 @@ import {
 } from "antd";
 const { Search } = Input;
 import { FilterOutlined, PlusCircleOutlined } from "@ant-design/icons";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchTodosWithQuery } from "../api/queries";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { createTodo, deleteTodo, updateTodo } from "../api/mutations";
@@ -31,11 +31,13 @@ import type { SearchProps } from "antd/es/input/Search";
 export declare type FilterOptions = "All" | "Completed" | "Active";
 
 const TodoList: React.FC = () => {
+  const queryClient = useQueryClient();
   const [newTaskName, setNewTaskName] = useState<string>("");
   const [filter, setFilter] = useState<FilterOptions>("All");
   const [openEdit, setOpenEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
+  const [idToEdit, setIdToEdit] = useState<number>(0);
 
   const { isPending, error, data } = useQuery({
     queryKey: ["tasks"],
@@ -45,14 +47,23 @@ const TodoList: React.FC = () => {
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteTodo(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
   });
 
   const addMutation = useMutation({
     mutationFn: (newTodo: TaskModel) => createTodo(newTodo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: (editedTodo: TaskModel) => updateTodo(editedTodo),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
   });
 
   const completeMutation = useMutation({
@@ -71,6 +82,9 @@ const TodoList: React.FC = () => {
     console.log(info?.source, value);
 
   const handleAdd = () => {
+    if (newTaskName == "") {
+      return;
+    }
     const t: TaskModel = {
       Id: 0,
       Name: newTaskName,
@@ -111,6 +125,8 @@ const TodoList: React.FC = () => {
     setConfirmLoading(true);
     setModalText("The modal will be closed after edit is completed");
     updateMutation.mutate(editedTask);
+    setConfirmLoading(false);
+    setOpenEdit(false);
   };
 
   const handleCancel = () => {
@@ -169,18 +185,8 @@ const TodoList: React.FC = () => {
                   disabled={item.IsComplete}
                   icon={<EditOutlined />}
                   onClick={() => {
-                    <Modal
-                      title="Title"
-                      open={openEdit}
-                      onOk={() => handleOk(item.Id)}
-                      confirmLoading={confirmLoading}
-                      onCancel={handleCancel}
-                    >
-                      <Input
-                        placeholder={item.Name}
-                        onChange={(e) => setModalText(e.target.value)}
-                      />
-                    </Modal>;
+                    setModalText(item.Name);
+                    setIdToEdit(item.Id);
                     showModal();
                   }}
                 ></Button>,
@@ -214,6 +220,18 @@ const TodoList: React.FC = () => {
                   <Typography.Text mark></Typography.Text> {item.Name}
                 </Tooltip>
               </Space>
+              <Modal
+                title="Edit Task"
+                open={openEdit}
+                onOk={() => handleOk(idToEdit)}
+                confirmLoading={confirmLoading}
+                onCancel={() => handleCancel()}
+              >
+                <Input
+                  placeholder={modalText}
+                  onChange={(e) => setModalText(e.target.value)}
+                />
+              </Modal>
             </List.Item>
           )}
           footer={
