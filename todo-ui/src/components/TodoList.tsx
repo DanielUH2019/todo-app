@@ -26,8 +26,9 @@ import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { createTodo, deleteTodo, updateTodo } from "../api/mutations";
 import { useState } from "react";
 import type { SearchProps } from "antd/es/input/Search";
+import { useDebounce } from "@uidotdev/usehooks";
+import {FilterOptions} from "../types/filter_options";
 
-export declare type FilterOptions = "All" | "Completed" | "Active";
 
 const TodoList: React.FC = () => {
   const queryClient = useQueryClient();
@@ -37,10 +38,13 @@ const TodoList: React.FC = () => {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
   const [idToEdit, setIdToEdit] = useState<number>(0);
+  const [searchText, setSearchText] = useState<string>("");
+
+  const debouncedFilter = useDebounce(searchText, 500);
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: (query: any) => fetchTodosWithQuery(query),
+    queryKey: ["tasks", debouncedFilter],
+    queryFn: () => fetchTodosWithQuery(debouncedFilter),
     placeholderData: [],
   });
 
@@ -78,8 +82,10 @@ const TodoList: React.FC = () => {
     setFilter(value);
   };
 
-  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) => {
     console.log(info?.source, value);
+    setSearchText(value);
+  };
 
   const handleAdd = () => {
     if (newTaskName == "") {

@@ -1,4 +1,5 @@
 import buildQuery from "odata-query";
+// import f from "odata-filter-builder";
 
 import {
   taskModel,
@@ -12,9 +13,10 @@ import axiosClient from "./client";
 const orderBy = ["IsComplete asc", "CompletedAt desc"];
 
 export const fetchTodosWithQuery = async (
-  query: any
+  name: string
 ): Promise<TaskModelList> => {
-  const queryString = buildQuery({ orderBy });
+  const filter = { Name: { contains: name } };
+  const queryString = buildQuery({ orderBy, filter });
   try {
     const response = await axiosClient.get(`/Tasks${queryString}`);
     const parsedData = taskModelList.parse(response.data.value);
