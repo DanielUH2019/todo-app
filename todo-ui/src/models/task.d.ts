@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const taskModel = z.object({
-  id: z.number(),
-  name: z.string(),
-  isCompleted: z.boolean(),
-  createdAt: z.date(),
+  Id: z.number(),
+  Name: z.string(),
+  IsComplete: z.boolean(),
+  CreationTime: z.coerce.date(),
 });
 
 export const taskModelList = z.array(taskModel);
