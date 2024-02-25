@@ -27,8 +27,7 @@ import { createTodo, deleteTodo, updateTodo } from "../api/mutations";
 import { useState } from "react";
 import type { SearchProps } from "antd/es/input/Search";
 import { useDebounce } from "@uidotdev/usehooks";
-import {FilterOptions} from "../types/filter_options";
-
+import { FilterOptions } from "../types/filter_options";
 
 const TodoList: React.FC = () => {
   const queryClient = useQueryClient();
@@ -74,6 +73,9 @@ const TodoList: React.FC = () => {
       t.IsComplete = true;
       t.CompletedAt = new Date();
       return updateTodo(t);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
     },
   });
   // use state for filter value
@@ -231,7 +233,9 @@ const TodoList: React.FC = () => {
                       : `Completed at: ${item.CompletedAt}`
                   }
                 >
-                  <Typography.Text mark></Typography.Text> {item.Name}
+                  <Typography.Text delete={item.IsComplete}>
+                    {item.Name}
+                  </Typography.Text>
                 </Tooltip>
               </Space>
               <Modal
