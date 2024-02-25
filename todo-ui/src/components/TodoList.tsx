@@ -19,16 +19,23 @@ import {
   Tooltip,
   Space,
   Input,
+  Modal,
+  Popconfirm,
 } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchTodosWithQuery } from "../api/queries";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { createTodo, deleteTodo } from "../api/mutations";
+import { createTodo, deleteTodo, updateTodo } from "../api/mutations";
 import { useState } from "react";
 
 const TodoList: React.FC<TaskListProps> = ({ filter }) => {
   const [newTaskName, setNewTaskName] = useState<string>("");
+
+  const [openEdit, setOpenEdit] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [modalText, setModalText] = useState("Content of the modal");
+
   const { isPending, error, data } = useQuery({
     queryKey: ["tasks"],
     queryFn: (query: any) => fetchTodosWithQuery(query),
@@ -43,6 +50,16 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
     mutationFn: (newTodo: TaskModel) => createTodo(newTodo),
   });
 
+  const updateMutation = useMutation({
+    mutationFn: (editedTodo: TaskModel) => updateTodo(editedTodo),
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: (t: TaskModel) => {
+      t.IsComplete = true;
+      return updateTodo(t);
+    },
+  });
   // use state for filter value
 
   const handleAdd = () => {
@@ -52,8 +69,9 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
       IsComplete: false,
       CreationTime: new Date(),
     };
-
+    console.log("Adding todo...");
     addMutation.mutate(t);
+    console.log("Todo added!");
     return (
       <div>
         {addMutation.isPending ? (
@@ -69,6 +87,27 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
         )}
       </div>
     );
+  };
+
+  const showModal = () => {
+    setOpenEdit(true);
+  };
+
+  const handleOk = (id: number) => {
+    const editedTask: TaskModel = {
+      Id: id,
+      Name: modalText,
+      IsComplete: false,
+      CreationTime: new Date(),
+    };
+    setConfirmLoading(true);
+    setModalText("The modal will be closed after edit is completed");
+    updateMutation.mutate(editedTask);
+  };
+
+  const handleCancel = () => {
+    console.log("Edit canceled");
+    setOpenEdit(false);
   };
 
   if (isPending) {
@@ -98,23 +137,52 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
             <List.Item
               actions={[
                 <Button
+                  type="primary"
                   className="edit-todo"
+                  disabled={item.IsComplete}
                   icon={<EditOutlined />}
                   onClick={() => {
-                    <EditTodo idToEdit={item.Id} />;
+                    <Modal
+                      title="Title"
+                      open={openEdit}
+                      onOk={() => handleOk(item.Id)}
+                      confirmLoading={confirmLoading}
+                      onCancel={handleCancel}
+                    >
+                      <Input
+                        placeholder={item.Name}
+                        onChange={(e) => setModalText(e.target.value)}
+                      />
+                    </Modal>;
+                    showModal();
                   }}
                 ></Button>,
-                <Button
-                  className="remove-todo"
-                  icon={<DeleteOutlined />}
-                  onClick={() => {
-                    deleteMutation.mutate(item.Id);
-                  }}
-                ></Button>,
+                <Popconfirm
+                  title="Delete the task"
+                  description="Are you sure to delete this task?"
+                  onConfirm={() => deleteMutation.mutate(item.Id)}
+                  onCancel={() => {}}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Button danger icon={<DeleteOutlined />}></Button>
+                </Popconfirm>,
               ]}
             >
               <Space>
-                <Checkbox onChange={() => {}} />
+                <Popconfirm
+                  title="Conplete task"
+                  description="Are you sure?"
+                  onConfirm={() => completeMutation.mutate(item)}
+                  okText="Yes"
+                  cancelText="No"
+                >
+                  <Checkbox
+                    disabled={item.IsComplete}
+                    checked={item.IsComplete}
+                  />
+                </Popconfirm>
+
                 <Tooltip title={item.CreationTime.toUTCString()}>
                   <Typography.Text mark></Typography.Text> {item.Name}
                 </Tooltip>
@@ -133,7 +201,7 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
               <Button
                 type="primary"
                 icon={<PlusCircleOutlined />}
-                onClick={() => handleAdd}
+                onClick={() => handleAdd()}
               ></Button>
             </Space.Compact>
           }
