@@ -5,10 +5,6 @@ import { TaskModel, TaskModelList } from "../models/task";
 // import { useQuery } from "@tanstack/react-query";
 
 import { FilterOptions } from "../App";
-interface TaskListProps {
-  filter: FilterOptions;
-}
-
 import {
   Divider,
   List,
@@ -21,17 +17,22 @@ import {
   Input,
   Modal,
   Popconfirm,
+  Select,
 } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+const { Search } = Input;
+import { FilterOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchTodosWithQuery } from "../api/queries";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { createTodo, deleteTodo, updateTodo } from "../api/mutations";
 import { useState } from "react";
+import type { SearchProps } from "antd/es/input/Search";
 
-const TodoList: React.FC<TaskListProps> = ({ filter }) => {
+export declare type FilterOptions = "All" | "Completed" | "Active";
+
+const TodoList: React.FC = () => {
   const [newTaskName, setNewTaskName] = useState<string>("");
-
+  const [filter, setFilter] = useState<FilterOptions>("All");
   const [openEdit, setOpenEdit] = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [modalText, setModalText] = useState("Content of the modal");
@@ -61,6 +62,13 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
     },
   });
   // use state for filter value
+
+  const handleFilter = (value: FilterOptions) => {
+    setFilter(value);
+  };
+
+  const onSearch: SearchProps["onSearch"] = (value, _e, info) =>
+    console.log(info?.source, value);
 
   const handleAdd = () => {
     const t: TaskModel = {
@@ -129,7 +137,26 @@ const TodoList: React.FC<TaskListProps> = ({ filter }) => {
     <div className="todo">
       <Flex gap="middle" align="center" vertical>
         <List
-          header={<div>Todo List</div>}
+          header={
+            <Space.Compact style={{ width: "100%" }}>
+              <Search
+                placeholder="input search text"
+                onSearch={onSearch}
+                style={{ width: 200 }}
+              />
+              <Select
+                defaultValue="All"
+                style={{ width: 100 }}
+                onChange={handleFilter}
+                options={[
+                  { value: "All", label: "All" },
+                  { value: "Completed", label: "Completed" },
+                  { value: "Active", label: "Active" },
+                ]}
+                suffixIcon={<FilterOutlined />}
+              />
+            </Space.Compact>
+          }
           // footer={<div>Footer</div>}
           bordered={true}
           dataSource={tasks}
