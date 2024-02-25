@@ -51,7 +51,7 @@ public class TaskService : ITaskService
         }
         taskToUpdate.Name = task.Name;
         taskToUpdate.IsComplete = task.IsComplete;
-        taskToUpdate.Description = task.Description;
+        taskToUpdate.CompletedAt = task.CompletedAt;
         await db.SaveChangesAsync();
         return taskToUpdate;
     }
