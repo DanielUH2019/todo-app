@@ -4,7 +4,6 @@ import { TaskModel, TaskModelList } from "../models/task";
 
 // import { useQuery } from "@tanstack/react-query";
 
-import { FilterOptions } from "../App";
 import {
   Divider,
   List,
@@ -69,6 +68,7 @@ const TodoList: React.FC = () => {
   const completeMutation = useMutation({
     mutationFn: (t: TaskModel) => {
       t.IsComplete = true;
+      t.CompletedAt = new Date();
       return updateTodo(t);
     },
   });
@@ -90,6 +90,7 @@ const TodoList: React.FC = () => {
       Name: newTaskName,
       IsComplete: false,
       CreationTime: new Date(),
+      CompletedAt: null,
     };
     console.log("Adding todo...");
     addMutation.mutate(t);
@@ -121,6 +122,7 @@ const TodoList: React.FC = () => {
       Name: modalText,
       IsComplete: false,
       CreationTime: new Date(),
+      CompletedAt: null,
     };
     setConfirmLoading(true);
     setModalText("The modal will be closed after edit is completed");
@@ -216,7 +218,13 @@ const TodoList: React.FC = () => {
                   />
                 </Popconfirm>
 
-                <Tooltip title={item.CreationTime.toUTCString()}>
+                <Tooltip
+                  title={
+                    item.CompletedAt === null
+                      ? `Created at: ${item.CreationTime.toUTCString()}`
+                      : `Completed at: ${item.CompletedAt}`
+                  }
+                >
                   <Typography.Text mark></Typography.Text> {item.Name}
                 </Tooltip>
               </Space>

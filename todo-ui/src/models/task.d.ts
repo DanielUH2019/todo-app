@@ -5,6 +5,7 @@ export const taskModel = z.object({
   Name: z.string(),
   IsComplete: z.boolean(),
   CreationTime: z.coerce.date(),
+  CompletedAt: z.coerce.date().nullable()
 });
 
 export const taskModelList = z.array(taskModel);
