@@ -10,7 +10,6 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { AddTodo } from "./components/AddTodo";
 
 import { Select, Space, Input } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
@@ -42,7 +41,6 @@ function App() {
           <img src={reactLogo} className="App-logo" alt="logo" />
           <img src={viteLogo} className="App-logo" alt="logo" />
         </header>
-        <AddTodo />
         <Search
           placeholder="input search text"
           onSearch={onSearch}
