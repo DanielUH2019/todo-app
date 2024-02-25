@@ -23,12 +23,12 @@ const Task: React.FC<TaskProps> = ({ task }) => {
         onChange={() => {}}
         on
       /> */}
-      <label>{task.name}</label>
+      <label>{task.Name}</label>
       <EditOutlined>
         <button
           className="edit"
           onClick={() => {
-            <EditTodo idToEdit={task.id} />;
+            <EditTodo idToEdit={task.Id} />;
           }}
         />
       </EditOutlined>
@@ -36,7 +36,7 @@ const Task: React.FC<TaskProps> = ({ task }) => {
         <button
           className="destroy"
           onClick={() => {
-            mutation.mutate(task.id);
+            mutation.mutate(task.Id);
           }}
         />
       </DeleteOutlined>

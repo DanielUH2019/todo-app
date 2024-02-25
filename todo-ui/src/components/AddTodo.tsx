@@ -23,10 +23,10 @@ export const AddTodo = () => {
   const handleSubmission = (e: React.FormEvent) => {
     e.preventDefault();
     const t: TaskModel = {
-      id: 0,
-      name: input,
-      isCompleted: false,
-      createdAt: new Date(),
+      Id: 0,
+      Name: input,
+      IsComplete: false,
+      CreationTime: new Date(),
     };
 
     mutation.mutate(t);
@@ -65,7 +65,7 @@ export const AddTodo = () => {
           //   placeholder="start typing ..."
           // /> */}
         />
-        <Button  type="primary" icon={<PlusCircleOutlined />}>
+        <Button type="primary" icon={<PlusCircleOutlined />}>
           Add task
         </Button>
       </div>

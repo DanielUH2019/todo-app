@@ -26,10 +26,10 @@ export const EditTodo: React.FC<EditProps> = ({idToEdit}) => {
   const handleSubmission = (e: React.FormEvent) => {
     e.preventDefault();
     const t: TaskModel = {
-      id: idToEdit,
-      name: input,
-      isCompleted: false,
-      createdAt: new Date(),
+      Id: idToEdit,
+      Name: input,
+      IsComplete: false,
+      CreationTime: new Date(),
     };
 
     mutation.mutate( t );
