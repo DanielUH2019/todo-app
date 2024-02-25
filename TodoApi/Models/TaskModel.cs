@@ -7,4 +7,5 @@ public class TaskModel
     public string Name { get; set; } = string.Empty;
     public bool IsComplete { get; set; }
     public DateTimeOffset CreationTime { get; set; }
+    public DateTimeOffset? CompletedAt {get; set;}
 }
