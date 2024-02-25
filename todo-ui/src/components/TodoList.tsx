@@ -6,20 +6,36 @@ import Task from "./Task";
 
 import { FilterOptions } from "../App";
 interface TaskListProps {
-  tasks: TaskModelList;
   filter: FilterOptions;
 }
  
 import { Divider, List, Typography, Button } from "antd";
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTodosWithQuery } from "../api/queries";
 
-<PlusCircleOutlined />;
+const TodoList: React.FC<TaskListProps> = ({ filter }) => {
 
-const TodoList: React.FC<TaskListProps> = ({ tasks, filter }) => {
+  const { isPending, error, data } = useQuery({
+    queryKey: ["tasks"],
+    queryFn: (query: any) => fetchTodosWithQuery(query),
+    placeholderData: [],
+  });
+  // use state for filter value
+
+  if (isPending) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+  if (!data) {
+    return <div>No data</div>;
+  }
+  let tasks = [...data]
   if (filter === "Completed") {
-    tasks = tasks.filter((task) => task.isCompleted);
+    tasks = data.filter((task) => task.IsComplete);
   } else if (filter === "Active") {
-    tasks = tasks.filter((task) => !task.isCompleted);
+    tasks = data.filter((task) => !task.IsComplete);
   }
   return (
     <div className="todo">

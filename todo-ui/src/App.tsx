@@ -3,12 +3,12 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import TodoList from "./components/TodoList";
-import { fetchTodosWithQuery } from "./api/queries";
+// import { fetchTodosWithQuery } from "./api/queries";
+
 
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
 } from "@tanstack/react-query";
 import { AddTodo } from "./components/AddTodo";
 
@@ -24,22 +24,10 @@ const queryClient = new QueryClient();
 export declare type FilterOptions = "All" | "Completed" | "Active";
 
 function App() {
-  const { isPending, error, data } = useQuery({
-    queryKey: ["tasks"],
-    queryFn: (query: any) => fetchTodosWithQuery(query),
-  });
-  // use state for filter value
+  // const qClient = useQueryClient(queryClient)
   const [filter, setFilter] = useState<FilterOptions>("All");
-
-  if (isPending) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
-  if (!data) {
-    return <div>No data</div>;
-  }
+  console.log('hello')
+  
 
   const handleFilter = (value: FilterOptions) => {
     setFilter(value);
@@ -61,7 +49,6 @@ function App() {
           style={{ width: 200 }}
           
         />
-
         <Select
           defaultValue="All"
           style={{ width: 120 }}
@@ -74,7 +61,7 @@ function App() {
           suffixIcon={<FilterOutlined />}
         />
 
-        <TodoList tasks={data} filter={filter} />
+        <TodoList filter={filter} />
       </div>
     </QueryClientProvider>
   );
