@@ -10,7 +10,7 @@ import axiosClient from "./client";
 
 export const createTodo = async (task: TaskModel): Promise<TaskModel> => {
   try {
-    const response = await axiosClient.post(`/Tasks/${task.Id}`, task);
+    const response = await axiosClient.post(`/Tasks/`, task);
     const parsedData = taskModel.parse(response.data);
     return parsedData;
   } catch (error) {
@@ -19,11 +19,9 @@ export const createTodo = async (task: TaskModel): Promise<TaskModel> => {
   }
 };
 
-export const updateTodo = async (task: TaskModel): Promise<TaskModel> => {
+export const updateTodo = async (task: TaskModel): Promise<void> => {
   try {
-    const response = await axiosClient.put(`/Tasks/${task.Id}`, task);
-    const parsedData = taskModel.parse(response.data);
-    return parsedData;
+    await axiosClient.put(`/Tasks/${task.Id}`, task);
   } catch (error) {
     console.log(error);
     throw error;
@@ -32,7 +30,7 @@ export const updateTodo = async (task: TaskModel): Promise<TaskModel> => {
 
 export const deleteTodo = async (id: number): Promise<void> => {
   try {
-    await axiosClient.delete(`/odata/Tasks/${id}`);
+    await axiosClient.delete(`/Tasks/${id}`);
   } catch (error) {
     console.log(error);
     throw error;
