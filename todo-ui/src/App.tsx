@@ -1,26 +1,15 @@
-
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import TodoList from "./components/TodoList";
-// import { fetchTodosWithQuery } from "./api/queries";
 
-
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
-
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
 export declare type FilterOptions = "All" | "Completed" | "Active";
 
 function App() {
-  // const qClient = useQueryClient(queryClient)
-  
-  
   return (
     <QueryClientProvider client={queryClient}>
       <div className="App">

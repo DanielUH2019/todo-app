@@ -1,10 +1,4 @@
-
-
-
-import {
-  taskModel,
-  TaskModel,
-} from "../models/task.d";
+import { taskModel, TaskModel } from "../models/task.d";
 
 import axiosClient from "./client";
 
