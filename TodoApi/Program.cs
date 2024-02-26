@@ -80,7 +80,8 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     TaskDbHelper.Initialize(services);
 }
-    app.UseSwagger();
+
+app.UseSwagger();
 app.UseSwaggerUI();
 
 

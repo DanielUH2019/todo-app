@@ -15,34 +15,34 @@ internal static class TaskDbHelper
         {
             if (context.Tasks.Any())
             {
-                return;
+                context.Tasks.RemoveRange(context.Tasks);
             }
-            context.Tasks.AddRange(
-                new TaskModel
-                {
-                    Name = "Task 1",
-                    IsComplete = false,
-                    CreationTime = DateTime.Now
-                },
-                new TaskModel
-                {
-                    Name = "Task 2",
-                    IsComplete = true,
-                    CreationTime = DateTime.Now
-                },
-                new TaskModel
-                {
-                    Name = "Task 3",
-                    IsComplete = false,
-                    CreationTime = DateTime.Now
-                },
-                new TaskModel
-                {
-                    Name = "Task 4",
-                    IsComplete = true,
-                    CreationTime = DateTime.Now
-                }
-            );
+            // context.Tasks.AddRange(
+            //     new TaskModel
+            //     {
+            //         Name = "Task 1",
+            //         IsComplete = false,
+            //         CreationTime = DateTime.Now
+            //     },
+            //     new TaskModel
+            //     {
+            //         Name = "Task 2",
+            //         IsComplete = true,
+            //         CreationTime = DateTime.Now
+            //     },
+            //     new TaskModel
+            //     {
+            //         Name = "Task 3",
+            //         IsComplete = false,
+            //         CreationTime = DateTime.Now
+            //     },
+            //     new TaskModel
+            //     {
+            //         Name = "Task 4",
+            //         IsComplete = true,
+            //         CreationTime = DateTime.Now
+            //     }
+            // );
             context.SaveChanges();
         }
             
