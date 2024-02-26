@@ -44,9 +44,10 @@ export const Todo: React.FC<Props> = ({ item }) => {
     mutationFn: (id: number) => deleteTodo(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["count"] });
     },
     onError: (err: any) => {
-      return <>{errorMessage(`Error editing Task: ${err}`)}</>;
+      return <>{errorMessage(`Error deleting Task: ${err}`)}</>;
     },
   });
 
@@ -54,6 +55,7 @@ export const Todo: React.FC<Props> = ({ item }) => {
     mutationFn: (editedTodo: TaskModel) => updateTodo(editedTodo),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["count"] });
     },
     onError: (err: any) => {
       return <>{errorMessage(`Error editing Task: ${err}`)}</>;
@@ -74,6 +76,7 @@ export const Todo: React.FC<Props> = ({ item }) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["count"] });
     },
     onError: (err: any) => {
       return <>{errorMessage(`Error marking Task as completed: ${err}`)}</>;

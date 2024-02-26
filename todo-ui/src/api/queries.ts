@@ -37,3 +37,14 @@ export const fetchTodoById = async (id: number): Promise<TaskModel> => {
     throw error;
   }
 };
+
+export const fetchTodosCount = async (
+): Promise<number> => {
+  try {
+    const response = await axiosClient.get("/Tasks/$count");
+    return response.data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};

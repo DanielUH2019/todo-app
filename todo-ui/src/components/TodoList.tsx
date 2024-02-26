@@ -1,9 +1,19 @@
 import { TaskModel } from "../models/task";
-import { List, Button, Flex, Space, Input, Select, message } from "antd";
+import {
+  List,
+  Button,
+  Flex,
+  Space,
+  Input,
+  Select,
+  message,
+  Badge,
+  Tooltip,
+} from "antd";
 const { Search } = Input;
 import { FilterOutlined, PlusCircleOutlined } from "@ant-design/icons";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchTodosWithQuery } from "../api/queries";
+import { fetchTodosCount, fetchTodosWithQuery } from "../api/queries";
 import { createTodo } from "../api/mutations";
 import { useState } from "react";
 import type { SearchProps } from "antd/es/input/Search";
@@ -34,10 +44,16 @@ const TodoList: React.FC = () => {
     placeholderData: [],
   });
 
+  const countResponse = useQuery({
+    queryKey: ["count"],
+    queryFn: () => fetchTodosCount(),
+  });
+
   const addMutation = useMutation({
     mutationFn: (newTodo: TaskModel) => createTodo(newTodo),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["tasks"] });
+      queryClient.invalidateQueries({ queryKey: ["count"] });
     },
     onError: (err: any) => {
       return <>{errorMessage(`Error creating new Task ${err}`)}</>;
@@ -90,7 +106,7 @@ const TodoList: React.FC = () => {
         {contextHolder}
         <List
           header={
-            <Space.Compact style={{ width: "100%" }}>
+            <Space style={{ width: "100%" }}>
               <Search
                 placeholder="input search text"
                 onSearch={onSearch}
@@ -107,7 +123,14 @@ const TodoList: React.FC = () => {
                 ]}
                 suffixIcon={<FilterOutlined />}
               />
-            </Space.Compact>
+              <Tooltip title="Total tasks in database">
+                <Badge
+                  className="site-badge-count-109"
+                  count={countResponse.data}
+                  style={{ backgroundColor: "#0000FF" }}
+                />
+              </Tooltip>
+            </Space>
           }
           bordered={true}
           dataSource={tasks}
