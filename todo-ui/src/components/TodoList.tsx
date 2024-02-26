@@ -161,7 +161,7 @@ const TodoList: React.FC = () => {
   }
   return (
     <div className="todo">
-      <Flex gap="middle" align="center" vertical>
+      <Flex gap="middle" align="center" wrap="wrap" justify="center">
         <List
           header={
             <Space.Compact style={{ width: "100%" }}>
