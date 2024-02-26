@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  ui: 
+    image: "todo-ui-react"
+    depends_on:
+      - api
+    build:
+      context: "./todo-ui"
+    ports:
+      - "5173:5173"
+  api:
+    image: "aspnetcore-todo-api"
+    build: .
+    depends_on:
+      - db
+    ports: 
+      - "7203:7203"
+  db:
+    image: mysql:8.0.31
+    restart: always
+    environment:
+      MYSQL_USER: root
+      MYSQL_DATABASE: blog
+      MYSQL_ROOT_PASSWORD: Leinad123
+      MYSQL_PASSWORD: Leinad123
+    ports:
+      - "3306:3306"
+       
+      
+volumes:
+  db:
+    driver: local
